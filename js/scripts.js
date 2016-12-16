@@ -90,9 +90,16 @@
           var availableSpaces = $('.box').not('.box-filled-1, .box-filled-2');
           var randomIndex = Math.round(Math.random() * ((availableSpaces.length - 1) - 0) + 0);
           var space = $(availableSpaces[randomIndex]);
+          var clickBlocker = body.find('.click-blocker');
 
-          space.trigger('click');
-          space.css('background-image', 'url("img/x.svg")');
+          setTimeout(function(){
+            space.trigger('click');
+            space.css('background-image', 'url("img/x.svg")');
+
+            clickBlocker.hide();
+          }, 3000);
+
+          clickBlocker.show();
         }
       }
 		}
@@ -150,14 +157,28 @@
 
     var playerName;
     var promptMessage = 'What is player ' + playerNumber + '\'s name?';
+    var timesPrompted = 0;
 
     // makes sure that the game has at least one human player before starting
     while(playerNumber === 1 && !Boolean(playerName)){
-      playerName = prompt(promptMessage + ' Player 1 must have a name!');
+
+      if(timesPrompted > 0){
+        playerName = prompt('Player 1 must have a name!');
+
+      }else{
+        playerName = prompt(promptMessage);
+      }
+
+      timesPrompted += 1;
     }
 
     if(playerNumber === 2){
       playerName = prompt(promptMessage + ' To play against the computer, leave this prompt empty.');
+
+      // prompts player 2 to choose a name other than what player 1 has chosen
+      while(playerName === game.players[0].name){
+        playerName = prompt('Player 1 already has the name ' + playerName + '! Choose something different.');
+      }
     }
     this.name = playerName;
   };
@@ -181,6 +202,8 @@
     html += '<a href="#" class="button">New game</a>';
     html += '</header>';
     html += '</div>';
+
+    html += '<div class="click-blocker"></div>';
 
 		return html;
 	});
